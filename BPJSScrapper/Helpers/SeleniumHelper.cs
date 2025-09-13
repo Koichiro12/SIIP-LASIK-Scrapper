@@ -1,0 +1,39 @@
+﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BPJSScrapper.Helpers
+{
+
+
+    public class SeleniumHelper
+    {
+
+        IWebDriver driver;
+        ChromeDriverService cds;
+        public string Url { get; set; }
+
+        public SeleniumHelper(string url)
+        {
+
+            Url = url;
+            cds = ChromeDriverService.CreateDefaultService();
+            cds.HideCommandPromptWindow = true;
+        }
+
+
+        public void Start()
+        {
+            driver = new ChromeDriver(cds,new ChromeOptions());
+            driver.Navigate().GoToUrl(Url);
+        }
+        public void close()
+        {
+            driver.Quit();
+        }
+    }
+}
