@@ -29,5 +29,10 @@ namespace BPJSScrapper
             FormLasik f = new FormLasik();
             f.ShowDialog();
         }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+
+        }
     }
 }

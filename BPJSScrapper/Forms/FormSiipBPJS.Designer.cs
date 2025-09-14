@@ -31,8 +31,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.txt_file = new System.Windows.Forms.TextBox();
-            this.btn_search = new System.Windows.Forms.Button();
-            this.btn_open_browser = new System.Windows.Forms.Button();
+            this.btn_browse = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.btn_start = new System.Windows.Forms.Button();
             this.txt_log = new System.Windows.Forms.RichTextBox();
@@ -72,25 +71,16 @@
             this.txt_file.Size = new System.Drawing.Size(372, 20);
             this.txt_file.TabIndex = 3;
             // 
-            // btn_search
+            // btn_browse
             // 
-            this.btn_search.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_search.Location = new System.Drawing.Point(499, 88);
-            this.btn_search.Name = "btn_search";
-            this.btn_search.Size = new System.Drawing.Size(99, 20);
-            this.btn_search.TabIndex = 4;
-            this.btn_search.Text = "Browse";
-            this.btn_search.UseVisualStyleBackColor = true;
-            // 
-            // btn_open_browser
-            // 
-            this.btn_open_browser.Location = new System.Drawing.Point(16, 73);
-            this.btn_open_browser.Name = "btn_open_browser";
-            this.btn_open_browser.Size = new System.Drawing.Size(99, 36);
-            this.btn_open_browser.TabIndex = 5;
-            this.btn_open_browser.Text = "Open Browser";
-            this.btn_open_browser.UseVisualStyleBackColor = true;
-            this.btn_open_browser.Click += new System.EventHandler(this.button2_Click);
+            this.btn_browse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_browse.Location = new System.Drawing.Point(499, 88);
+            this.btn_browse.Name = "btn_browse";
+            this.btn_browse.Size = new System.Drawing.Size(99, 20);
+            this.btn_browse.TabIndex = 4;
+            this.btn_browse.Text = "Browse";
+            this.btn_browse.UseVisualStyleBackColor = true;
+            this.btn_browse.Click += new System.EventHandler(this.btn_browse_Click);
             // 
             // label3
             // 
@@ -103,17 +93,17 @@
             this.label3.Size = new System.Drawing.Size(182, 15);
             this.label3.TabIndex = 6;
             this.label3.Text = "*Note File harus berformat .xlsx ( Excel ).";
-            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // btn_start
             // 
             this.btn_start.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_start.Location = new System.Drawing.Point(16, 115);
+            this.btn_start.Location = new System.Drawing.Point(16, 73);
             this.btn_start.Name = "btn_start";
             this.btn_start.Size = new System.Drawing.Size(99, 50);
             this.btn_start.TabIndex = 8;
             this.btn_start.Text = "START";
             this.btn_start.UseVisualStyleBackColor = true;
+            this.btn_start.Click += new System.EventHandler(this.btn_start_Click);
             // 
             // txt_log
             // 
@@ -145,8 +135,7 @@
             this.Controls.Add(this.txt_log);
             this.Controls.Add(this.btn_start);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.btn_open_browser);
-            this.Controls.Add(this.btn_search);
+            this.Controls.Add(this.btn_browse);
             this.Controls.Add(this.txt_file);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -164,8 +153,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txt_file;
-        private System.Windows.Forms.Button btn_search;
-        private System.Windows.Forms.Button btn_open_browser;
+        private System.Windows.Forms.Button btn_browse;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btn_start;
         private System.Windows.Forms.RichTextBox txt_log;

@@ -19,10 +19,26 @@ namespace BPJSScrapper.Helpers
 
         public SeleniumHelper(string url)
         {
-
             Url = url;
             cds = ChromeDriverService.CreateDefaultService();
             cds.HideCommandPromptWindow = true;
+        }
+
+        public IWebDriver getDriver()
+        {
+            return this.driver;
+        }
+
+        public bool isElementPresent(By by)
+        {
+            try
+            {
+                this.driver.FindElement(by);
+                return true;
+            }catch { 
+                return false; 
+            }
+
         }
 
 
@@ -33,7 +49,10 @@ namespace BPJSScrapper.Helpers
         }
         public void close()
         {
-            driver.Quit();
+            if(driver != null)
+            {
+                driver.Quit();
+            }
         }
     }
 }
