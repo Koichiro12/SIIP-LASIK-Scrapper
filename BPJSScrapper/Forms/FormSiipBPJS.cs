@@ -2,12 +2,14 @@
 using BPJSScrapper.Helpers;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace BPJSScrapper.Forms
@@ -20,6 +22,7 @@ namespace BPJSScrapper.Forms
         TextboxLogger tbLogger;
         FileHelper fileHelper;
         ArrayList data;
+        bool botIsRunning = false;
 
         public FormSiipBPJS()
         {
@@ -47,7 +50,10 @@ namespace BPJSScrapper.Forms
             string fpath = fileHelper.GetFilePath("Excel files (*.xlsx)|*.xlsx|All Files (*.*)|*.*)");
             if (fpath == null)
             {
-                logger.Process("Excel Tidak Ditemukan, Silahkan Coba Lagi !");
+                if(txt_file.Text.Length <= 0)
+                {
+                    logger.Process("Excel Tidak Ditemukan, Silahkan Coba Lagi !");
+                }
             }
             else
             {
@@ -65,7 +71,7 @@ namespace BPJSScrapper.Forms
                         {
                             if (c.DataType != null && c.DataType == CellValues.SharedString)
                             {
-                                var stringId = Convert.ToInt32(c.InnerText); // Do some error checking here
+                                var stringId = Convert.ToInt32(c.InnerText); 
                                 string text = workbookPart.SharedStringTablePart.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText;
                                 cell.Add(text);
                             }
@@ -79,50 +85,252 @@ namespace BPJSScrapper.Forms
 
         private void btn_start_Click(object sender, EventArgs e)
         {
-            InitialzeBot();
+            Thread tr;
+            if (btn_start.Text.Equals("Start"))
+            {
+                try
+                {
+                    btn_start.Invoke((MethodInvoker)delegate
+                    {
+                        btn_start.Enabled = false;
+                        btn_start.Text = "Running...";
+                    });
+                    btn_browse.Invoke((MethodInvoker)delegate
+                     {
+                         btn_browse.Enabled = false;
+                     });
+                    btn_browser.Invoke((MethodInvoker)delegate
+                    {
+                        btn_browser.Enabled = false;
+                    });
+                    tr = new Thread((ThreadStart)delegate
+                    {
+                        botIsRunning = true;
+                        StartBot();
+                    });
+                    tr.IsBackground = true;
+                    tr.Start();
+                    btn_start.Invoke((MethodInvoker)delegate
+                    {
+                        btn_start.Enabled = true;
+                        btn_start.Text = "Stop";
+                    });
+                }
+                catch (Exception ex)
+                {
+                    logger.In("Error : " + ex.Message);
+                }
+            }
+            else
+            {
+                botIsRunning = false;
+                btn_start.Invoke((MethodInvoker)delegate
+                {
+                    btn_start.Enabled = true;
+                    btn_start.Text = "Start";
+                });
+                btn_browse.Invoke((MethodInvoker)delegate
+                {
+                    btn_browse.Enabled = true;
+                });
+                btn_browser.Invoke((MethodInvoker)delegate
+                {
+                    btn_browser.Enabled = true;
+                });
+                logger.Process("Bot Di Hentikan !");
+            }
+        }  
+        private void btn_browser_Click(object sender, EventArgs e)
+        {
+            Thread tr;
+            if (btn_browser.Text.Equals("Open Browser"))
+            {
+                try
+                {
+                    btn_browser.Invoke((MethodInvoker)delegate
+                    {
+                        btn_browser.Enabled = false;
+                    });
+                    tr = new Thread((ThreadStart)delegate
+                    {
+                        InitialzeBot();
+                    });
+                    tr.IsBackground = true;
+                    tr.Start();
+
+                }
+                catch (Exception ex)
+                {
+                    logger.In("Error : " + ex.Message);
+                }
+            }
+            else
+            {
+                try
+                {
+                    seleniumHelper.getDriver().Quit();
+                    btn_browser.Invoke((MethodInvoker)delegate
+                    {
+                        btn_browser.Text = "Open Browser";
+                    });
+                    btn_start.Invoke((MethodInvoker)delegate
+                    {
+                        btn_start.Enabled = false;
+                        btn_start.Text = "Start";
+                    });
+                    logger.Process("Browser Ditutup");
+                }
+                catch (Exception ex)
+                {
+                    logger.In("Error : " + ex.Message);
+                }
+            }
         }
 
         private void InitialzeBot()
         {
-            logger.Process("Menjalankan Prosedur");
-            logger.Process("Cek Data KPJ excel");
-            if (data.Count > 0)
-            {
                 logger.Process("Menjalankan Browser...");
                 try
                 {
                     seleniumHelper.Start();
                     logger.Process("Berhasil Menjalankan Browser");
+                    btn_browser.Invoke((MethodInvoker)delegate
+                    {
+                        btn_browser.Enabled = true;
+                        btn_browser.Text = "Close Browser";
+                    });
                     logger.Process("Checking.....");
                     new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.Id("form-login")));
                     if (seleniumHelper.isElementPresent(By.Id("form-login")))
                     {
                         logger.Process("Silahkan Login dan Masuk Ke Form SIIP yang di tentukan !");
-                        new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")));
+                        new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(6000)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")));
                         if (seleniumHelper.isElementPresent(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")))
                         {
-                            logger.Process("Seluruh Prosedur Telah Terpenuhi, Silahkan Menjalankan BOT dengan klik start");
+                            logger.Process("Browser Siap !");
+                            btn_start.Invoke((MethodInvoker)delegate
+                            {
+                                btn_start.Enabled = true;
+                                btn_start.Text = "Start";
+                            });
                         }
 
                     }
                     else
                     {
-                        new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")));
+                        new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(6000)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")));
                         if (seleniumHelper.isElementPresent(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")))
                         {
-                            logger.Process("Seluruh Prosedur Telah Terpenuhi, Silahkan Menjalankan BOT dengan klik start");
+                            logger.Process("Browser Siap !");
+                            btn_start.Invoke((MethodInvoker)delegate
+                            {
+                                btn_start.Enabled = true;
+                                btn_start.Text = "Start";
+                            });
+                        }
+                    }
+                }catch(WebDriverTimeoutException ex)
+                {
+                    logger.Out("Waktu Tunggu Menuju Form Habis / Timeout . Silahkan Membuka Browser Kembali");
+                    seleniumHelper.getDriver().Quit();
+                    btn_browser.Invoke((MethodInvoker)delegate
+                    {
+                        btn_browser.Enabled = true;
+                        btn_browser.Text = "Open Browser";
+                    });
+                }
+                catch(Exception ex)
+                {
+
+                }
+            
+        }
+
+        private void StartBot()
+        {
+            logger.Process("Memulai Bot....");
+            if(data.Count <= 0)
+            {
+                logger.Out("Data KPJ Kosong, Silahkan Upload File KPJ Terlebih Dahulu !");
+                botIsRunning = false;
+                btn_start.Invoke((MethodInvoker)delegate
+                {
+                    btn_start.Enabled = true;
+                    btn_start.Text = "Start";
+                });
+                btn_browse.Invoke((MethodInvoker)delegate
+                {
+                    btn_browse.Enabled = true;
+                });
+                btn_browser.Invoke((MethodInvoker)delegate
+                {
+                    btn_browser.Enabled = true;
+                });
+                return;
+            }
+            for (int i = 0; i < data.Count; i++)
+            {
+                if (!botIsRunning)
+                {
+                    break;
+                }
+                try
+                {
+                    string kpj = ((ArrayList)data[i])[0].ToString();
+                    string nik = "";
+                    string nama = "";
+                    string tgl_lahir = "";
+                    string status = "Gagal";
+                    logger.Out("Data Ke - " + (i + 1) + " : " + kpj);
+                    if (seleniumHelper.isElementPresent(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")))
+                    {
+                        seleniumHelper.getDriver().FindElement(By.XPath("//*[@id=\"collapseOne\"]/div/div/div/button[1]")).Click();
+                        new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("//*[@id=\"kpj\"]")));
+                        seleniumHelper.getDriver().FindElement(By.XPath("//*[@id=\"kpj\"]")).SendKeys(kpj);
+                        Thread.Sleep(100);
+                        seleniumHelper.getDriver().FindElement(By.XPath("//*[@id=\"collapseTwo\"]/div/div/div/div[2]/a/button")).Click();
+                        new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("/html/body/div[3]")));
+                        if (seleniumHelper.isElementPresent(By.XPath("/html/body/div[3]")))
+                        {
+                            Thread.Sleep(100);
+                            new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("/html/body/div[3]/div/h2")));
+                            if (seleniumHelper.isElementPresent(By.XPath("/html/body/div[3]/div/h2")))
+                            {
+                                logger.Process(seleniumHelper.getDriver().FindElement(By.XPath("/html/body/div[3]/div/h2")).Text);
+                                // Copy Nama
+                                //Klik Lanjutkan
+                                //Copy Data
+                            }
+                            //Save To Excel
+                            logger.In("Data Di temukan, Saving To Excel");
+                            //Kembali Dan Reset Form
+                            seleniumHelper.getDriver().Navigate().Refresh();
+                            new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")));
+                        }
+                        else
+                        {
+                            Thread.Sleep(100);
+                            //Save Excel
+                            logger.In("Data Tidak Di temukan, Karena alasan ....");
+                            //Kembali Dan Reset Form
+                            seleniumHelper.getDriver().Navigate().Refresh();
+                            new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")));
                         }
                     }
                 }
+                catch (WebDriverTimeoutException ex)
+                {
+                    logger.Out("TimeOut,Retrying...");
+                    i -= 1;
+                }
                 catch (Exception ex)
                 {
-                    logger.Process("Gagal Menjalankan Browser Error : " + ex.Message);
+                    logger.Out("Error : " + ex.Message);
+                    break;
                 }
-            }
-            else
-            {
-                logger.Out("Data KPJ (Excel) Kosong / Belum Di set");
+                
             }
         }
+       
     }
 }

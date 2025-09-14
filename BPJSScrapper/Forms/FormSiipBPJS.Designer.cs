@@ -36,6 +36,7 @@
             this.btn_start = new System.Windows.Forms.Button();
             this.txt_log = new System.Windows.Forms.RichTextBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.btn_browser = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -96,12 +97,13 @@
             // 
             // btn_start
             // 
+            this.btn_start.Enabled = false;
             this.btn_start.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_start.Location = new System.Drawing.Point(16, 73);
+            this.btn_start.Location = new System.Drawing.Point(16, 88);
             this.btn_start.Name = "btn_start";
             this.btn_start.Size = new System.Drawing.Size(99, 50);
             this.btn_start.TabIndex = 8;
-            this.btn_start.Text = "START";
+            this.btn_start.Text = "Start";
             this.btn_start.UseVisualStyleBackColor = true;
             this.btn_start.Click += new System.EventHandler(this.btn_start_Click);
             // 
@@ -126,11 +128,23 @@
             this.label4.TabIndex = 10;
             this.label4.Text = "Upload File, Open Browser , Login And Start";
             // 
+            // btn_browser
+            // 
+            this.btn_browser.Font = new System.Drawing.Font("Arial Narrow", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_browser.Location = new System.Drawing.Point(16, 144);
+            this.btn_browser.Name = "btn_browser";
+            this.btn_browser.Size = new System.Drawing.Size(99, 50);
+            this.btn_browser.TabIndex = 11;
+            this.btn_browser.Text = "Open Browser";
+            this.btn_browser.UseVisualStyleBackColor = true;
+            this.btn_browser.Click += new System.EventHandler(this.btn_browser_Click);
+            // 
             // FormSiipBPJS
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(605, 382);
+            this.Controls.Add(this.btn_browser);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.txt_log);
             this.Controls.Add(this.btn_start);
@@ -158,5 +172,6 @@
         private System.Windows.Forms.Button btn_start;
         private System.Windows.Forms.RichTextBox txt_log;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button btn_browser;
     }
 }

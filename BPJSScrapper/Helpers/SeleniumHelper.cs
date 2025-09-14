@@ -44,7 +44,9 @@ namespace BPJSScrapper.Helpers
 
         public void Start()
         {
-            driver = new ChromeDriver(cds,new ChromeOptions());
+            ChromeOptions options = new ChromeOptions();
+            options.AddArgument("no-sandbox");
+            driver = new ChromeDriver(cds,options);
             driver.Navigate().GoToUrl(Url);
         }
         public void close()

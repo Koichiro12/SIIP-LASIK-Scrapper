@@ -25,6 +25,8 @@ namespace BPJSScrapper.Helpers
                 return;
             }
             this._rtb.Text += value + Environment.NewLine;
+            this._rtb.SelectionStart = this._rtb.Text.Length;
+            this._rtb.ScrollToCaret();
         }
 
         public void In(string value)

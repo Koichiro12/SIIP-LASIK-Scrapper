@@ -21,13 +21,15 @@ namespace BPJSScrapper.Helpers
                 return;
             }
             this.textbox.Text += value + Environment.NewLine;
+            this.textbox.SelectionStart = this.textbox.Text.Length;
+            this.textbox.ScrollToCaret();
         }
 
         public void SetTextBox(string value)
         {
             if (this.textbox.InvokeRequired)
             {
-                this.textbox.Invoke(new Action<string>(AppendTextBox), new object[] { value });
+                this.textbox.Invoke(new Action<string>(SetTextBox), new object[] { value });
                 return;
             }
             this.textbox.Text = value;
