@@ -46,6 +46,7 @@ namespace BPJSScrapper.Helpers
         {
             ChromeOptions options = new ChromeOptions();
             options.AddArgument("no-sandbox");
+            options.PageLoadStrategy = PageLoadStrategy.None;
             driver = new ChromeDriver(cds,options);
             driver.Navigate().GoToUrl(Url);
         }

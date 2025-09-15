@@ -80,6 +80,7 @@ namespace BPJSScrapper.Forms
                     }
                 }
                 logger.Process("File KPJ Ready");
+                logger.Process(data.Count.ToString());
             }
         }
 
@@ -193,6 +194,7 @@ namespace BPJSScrapper.Forms
                 try
                 {
                     seleniumHelper.Start();
+                    seleniumHelper.getDriver().Manage().Window.Maximize();
                     logger.Process("Berhasil Menjalankan Browser");
                     btn_browser.Invoke((MethodInvoker)delegate
                     {
@@ -273,92 +275,119 @@ namespace BPJSScrapper.Forms
                 });
                 return;
             }
-            for (int i = 0; i < data.Count; i++)
+          
+            for (int i = 0; i <= data.Count - 1; i++)
             {
                 if (!botIsRunning)
                 {
                     break;
                 }
-                try
+                if (i <= data.Count)
                 {
-                    string kpj = ((ArrayList)data[i])[0].ToString();
-                    string nik = "-";
-                    string nama = "-";
-                    string tgl_lahir = "-";
-                    string email = "-";
-                    string status = "Gagal";
-                    string ket = "-";
-                    logger.Out("Data Ke - " + (i + 1) + " : " + kpj);
-                    if (seleniumHelper.isElementPresent(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")))
+                    if (((ArrayList)data[i])[0].ToString() == "")
                     {
-                        new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("//*[@id=\"collapseOne\"]/div/div/div/button[1]")));
-                        seleniumHelper.getDriver().FindElement(By.XPath("//*[@id=\"collapseOne\"]/div/div/div/button[1]")).Click();
-                        Thread.Sleep(700);
-                        seleniumHelper.getDriver().FindElement(By.Id("kpj")).Clear();
-                        seleniumHelper.getDriver().FindElement(By.Id("kpj")).SendKeys(kpj);
-                        seleniumHelper.getDriver().FindElement(By.XPath("//*[@id=\"collapseTwo\"]/div/div/div/div[2]/a/button")).Click();
-
-                        new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("/html/body/div[3]")));
-                        if (seleniumHelper.isElementPresent(By.XPath("/html/body/div[3]")))
+                        return;
+                    }
+                    try
+                    {
+                        string kpj = ((ArrayList)data[i])[0].ToString();
+                        string nik = "-";
+                        string nama = "-";
+                        string tgl_lahir = "-";
+                        string email = "-";
+                        string status = "Gagal";
+                        string ket = "-";
+                        logger.Out("Data Ke - " + (i + 1) + " : " + kpj);
+                        if (seleniumHelper.isElementPresent(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")))
                         {
-                            Thread.Sleep(100);
-                            new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("/html/body/div[3]/div/h2")));
-                            if (seleniumHelper.isElementPresent(By.XPath("/html/body/div[3]/div/h2")) && seleniumHelper.isElementPresent(By.XPath("/html/body/div[3]/div/div[6]")) && seleniumHelper.isElementPresent(By.XPath("/html/body/div[3]/div/button[1]")))
+
+                            new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"collapseOne\"]/div/div/div/button[1]")));
+                            seleniumHelper.getDriver().FindElement(By.XPath("//*[@id=\"collapseOne\"]/div/div/div/button[1]")).Click();
+                            Thread.Sleep(700);
+                            seleniumHelper.getDriver().FindElement(By.Id("kpj")).Clear();
+                            seleniumHelper.getDriver().FindElement(By.Id("kpj")).SendKeys(kpj);
+                            seleniumHelper.getDriver().FindElement(By.XPath("//*[@id=\"collapseTwo\"]/div/div/div/div[2]/a/button")).Click();
+
+                            new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("/html/body/div[3]")));
+                            if (seleniumHelper.isElementPresent(By.XPath("/html/body/div[3]")))
                             {
-                                string sts = seleniumHelper.getDriver().FindElement(By.XPath("/html/body/div[3]/div/h2")).Text;
-                                string rawName = seleniumHelper.getDriver().FindElement(By.XPath("/html/body/div[3]/div/div[6]")).Text;
-                                
-                                if (sts.Contains("Berhasil!"))
+                                Thread.Sleep(100);
+                                new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("/html/body/div[3]/div/h2")));
+                                if (seleniumHelper.isElementPresent(By.XPath("/html/body/div[3]/div/h2")) && seleniumHelper.isElementPresent(By.XPath("/html/body/div[3]/div/div[6]")) && seleniumHelper.isElementPresent(By.XPath("/html/body/div[3]/div/button[1]")))
                                 {
-                                    nama = fileHelper.StringCatcher(rawName, "Tenaga Kerja atas nama ", " terdaftar sebagai peserta BPJS Ketenagakerjaan.");
-                                    seleniumHelper.getDriver().FindElement(By.XPath("/html/body/div[3]/div/button[1]")).Click();
-                                    new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("//*[@id=\"no_identitas\"]")));
-                                    if (seleniumHelper.isElementPresent(By.XPath("//*[@id=\"no_identitas\"]")) && seleniumHelper.isElementPresent(By.XPath("//*[@id=\"tgl_lahir\"]")) && seleniumHelper.isElementPresent(By.XPath("//*[@id=\"email\"]")))
+                                    string sts = seleniumHelper.getDriver().FindElement(By.XPath("/html/body/div[3]/div/h2")).Text;
+                                    string rawName = seleniumHelper.getDriver().FindElement(By.XPath("/html/body/div[3]/div/div[6]")).Text;
+
+                                    if (sts.Contains("Berhasil!"))
                                     {
-                                        //Set Data
-                                        nik = seleniumHelper.getDriver().FindElement(By.Id("no_identitas")).GetAttribute("value");
-                                        tgl_lahir = seleniumHelper.getDriver().FindElement(By.Id("tgl_lahir")).GetAttribute("value");
-                                        email = seleniumHelper.getDriver().FindElement(By.Id("email")).GetAttribute("value");
-                                        logger.In(kpj+": "+nik+" "+nama+" "+tgl_lahir+" "+email);
+                                        nama = fileHelper.StringCatcher(rawName, "Tenaga Kerja atas nama ", " terdaftar sebagai peserta BPJS Ketenagakerjaan.");
+                                        seleniumHelper.getDriver().FindElement(By.XPath("/html/body/div[3]/div/button[1]")).Click();
+                                        new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.Id("no_identitas")));
+                                        if (seleniumHelper.isElementPresent(By.Id("no_identitas")) && seleniumHelper.isElementPresent(By.Id("tgl_lahir")) && seleniumHelper.isElementPresent(By.Id("email")))
+                                        {
+                                            //Set Data
+                                            nik = seleniumHelper.getDriver().FindElement(By.Id("no_identitas")).GetAttribute("value");
+                                            tgl_lahir = seleniumHelper.getDriver().FindElement(By.Id("tgl_lahir")).GetAttribute("value");
+                                            email = seleniumHelper.getDriver().FindElement(By.Id("email")).GetAttribute("value");
+                                            logger.In(kpj + ": " + nik + " " + nama + " " + tgl_lahir + " " + email);
+
+                                            //Save Excels
+                                        }
+
                                     }
-                                  
+                                    else
+                                    {
+                                        status = "Gagal";
+                                        logger.In(rawName);
+                                        ket = rawName;
+                                    }
+                                    seleniumHelper.getDriver().Navigate().GoToUrl(LinksVal.form_url);
+                                    new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")));
                                 }
-                                else
-                                {
-                                    status = "Gagal";
-                                    logger.In(rawName);
-                                    ket = rawName;
-                                }
-                                seleniumHelper.getDriver().Navigate().GoToUrl(LinksVal.form_url);
-                                new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")));
+                            }
+                            else
+                            {
+                                Thread.Sleep(100);
+                                //Save Excel
+                                logger.In("Data Tidak Di temukan, Karena Kendala. Memulai Ulang Data !");
+                                //Kembali Dan Reset Form
+                                seleniumHelper.getDriver().Navigate().Refresh();
+                                new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")));
                             }
                         }
-                        else
-                        {
-                            Thread.Sleep(100);
-                            //Save Excel
-                            logger.In("Data Tidak Di temukan, Karena Kendala. Memulai Ulang Data !");
-                            //Kembali Dan Reset Form
-                            seleniumHelper.getDriver().Navigate().Refresh();
-                            new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")));
-                        }
+                    }
+                    catch (WebDriverTimeoutException ex)
+                    {
+                        logger.Out("TimeOut,Retrying...");
+                        i -= 1;
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Out("Error :" + ex.Message);
+                        logger.Out("Retrying...");
+                        i -= 1;
+                        seleniumHelper.getDriver().Navigate().GoToUrl(LinksVal.form_url);
+                        new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")));
                     }
                 }
-                catch (WebDriverTimeoutException ex)
-                {
-                    logger.Out("TimeOut,Retrying...");
-                    i -= 1;
-                }
-                catch (Exception ex)
-                {
-                    logger.Out("Error :" + ex.Message);
-                    logger.Out("Retrying...");
-                    i -= 1;
-                    seleniumHelper.getDriver().Navigate().GoToUrl(LinksVal.form_url);
-                    new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")));
-                }
                 
+                    
             }
+            logger.Process("Selesai Memproses Data !");
+            botIsRunning = false;
+            btn_start.Invoke((MethodInvoker)delegate
+            {
+                btn_start.Enabled = true;
+                btn_start.Text = "Start";
+            });
+            btn_browse.Invoke((MethodInvoker)delegate
+            {
+                btn_browse.Enabled = true;
+            });
+            btn_browser.Invoke((MethodInvoker)delegate
+            {
+                btn_browser.Enabled = true;
+            });
         }
        
     }
