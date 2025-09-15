@@ -294,8 +294,8 @@ namespace BPJSScrapper.Forms
                         new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("//*[@id=\"collapseOne\"]/div/div/div/button[1]")));
                         seleniumHelper.getDriver().FindElement(By.XPath("//*[@id=\"collapseOne\"]/div/div/div/button[1]")).Click();
                         Thread.Sleep(700);
-                        seleniumHelper.getDriver().FindElement(By.XPath("//*[@id=\"kpj\"]")).Clear();
-                        seleniumHelper.getDriver().FindElement(By.XPath("//*[@id=\"kpj\"]")).SendKeys(kpj);
+                        seleniumHelper.getDriver().FindElement(By.Id("kpj")).Clear();
+                        seleniumHelper.getDriver().FindElement(By.Id("kpj")).SendKeys(kpj);
                         seleniumHelper.getDriver().FindElement(By.XPath("//*[@id=\"collapseTwo\"]/div/div/div/div[2]/a/button")).Click();
 
                         new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("/html/body/div[3]")));
@@ -316,9 +316,9 @@ namespace BPJSScrapper.Forms
                                     if (seleniumHelper.isElementPresent(By.XPath("//*[@id=\"no_identitas\"]")) && seleniumHelper.isElementPresent(By.XPath("//*[@id=\"tgl_lahir\"]")) && seleniumHelper.isElementPresent(By.XPath("//*[@id=\"email\"]")))
                                     {
                                         //Set Data
-                                        nik = seleniumHelper.getDriver().FindElement(By.XPath("//*[@id=\"no_identitas\"]")).GetAttribute("value");
-                                        tgl_lahir = seleniumHelper.getDriver().FindElement(By.XPath("//*[@id=\"tgl_lahir\"]")).GetAttribute("value");
-                                        email = seleniumHelper.getDriver().FindElement(By.XPath("//*[@id=\"email\"]")).GetAttribute("value");
+                                        nik = seleniumHelper.getDriver().FindElement(By.Id("no_identitas")).GetAttribute("value");
+                                        tgl_lahir = seleniumHelper.getDriver().FindElement(By.Id("tgl_lahir")).GetAttribute("value");
+                                        email = seleniumHelper.getDriver().FindElement(By.Id("email")).GetAttribute("value");
                                         logger.In(kpj+": "+nik+" "+nama+" "+tgl_lahir+" "+email);
                                     }
                                   
@@ -351,6 +351,7 @@ namespace BPJSScrapper.Forms
                 }
                 catch (Exception ex)
                 {
+                    logger.Out("Error :" + ex.Message);
                     logger.Out("Retrying...");
                     i -= 1;
                     seleniumHelper.getDriver().Navigate().GoToUrl(LinksVal.form_url);
