@@ -225,6 +225,7 @@ namespace BPJSScrapper.Forms
                     }
                     else
                     {
+                        seleniumHelper.getDriver().Navigate().GoToUrl(LinksVal.form_url);
                         new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(6000)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")));
                         if (seleniumHelper.isElementPresent(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")))
                         {
