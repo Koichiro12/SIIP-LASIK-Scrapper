@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,6 +38,14 @@ namespace BPJSScrapper.Helpers
 
 
             return result;
+        }
+
+        public void CreateFolderIfNotExist(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
         }
 
         public string StringCatcher(string source, string kanan = null, string kiri = null)
