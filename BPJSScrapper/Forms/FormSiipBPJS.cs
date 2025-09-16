@@ -42,7 +42,13 @@ namespace BPJSScrapper.Forms
         private void FormSiipBPJS_FormClosed(object sender, FormClosedEventArgs e)
         {
 
+            if(botIsRunning)
+            {
+                botIsRunning = false;
+                Thread.Sleep(2000);
+            }
             seleniumHelper.close();
+
         }
 
         private void btn_browse_Click(object sender, EventArgs e)
@@ -205,7 +211,7 @@ namespace BPJSScrapper.Forms
                     new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.Id("form-login")));
                     if (seleniumHelper.isElementPresent(By.Id("form-login")))
                     {
-                        logger.Process("Silahkan Login dan Masuk Ke Form SIIP yang di tentukan !");
+                        logger.Process("Silahkan Login !");
                         new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(6000)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("//*[@id=\"wrapper\"]/div[1]/div[2]/div/ul[1]/li/button")));
                         if (seleniumHelper.isElementPresent(By.XPath("//*[@id=\"wrapper\"]/div[1]/div[2]/div/ul[1]/li/button")))
                         {
@@ -414,8 +420,9 @@ namespace BPJSScrapper.Forms
                             new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")));
                         }
                     }
+                    workbook.Save();
                 }
-                workbook.Save();
+                
             }
             logger.Process("Selesai Memproses Data !");
             botIsRunning = false;
