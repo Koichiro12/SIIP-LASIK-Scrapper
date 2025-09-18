@@ -1,5 +1,6 @@
 ﻿using BPJSScrapper.Constant;
 using BPJSScrapper.Helpers;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
@@ -75,18 +76,35 @@ namespace BPJSScrapper.Forms
                         ArrayList cell = new ArrayList();
                         foreach (Cell c in r.Elements<Cell>())
                         {
+                           
                             if (c.DataType != null && c.DataType == CellValues.SharedString)
                             {
                                 var stringId = Convert.ToInt32(c.InnerText); 
                                 string text = workbookPart.SharedStringTablePart.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText;
-                                cell.Add(text);
+                                if(text != "")
+                                {
+                                    cell.Add(text);
+                                }
+
+                            }
+                            else
+                            {
+                                if (c.CellValue != null)
+                                {
+                                    cell.Add(c.CellValue.Text);
+                                }
+
                             }
                         }
-                        data.Add(cell);
+                        if(cell.Count > 0)
+                        {
+                            data.Add(cell);
+                        }
+                      
                     }
                 }
                 logger.Process("File KPJ Ready");
-                logger.Process(data.Count.ToString());
+                logger.Out(data.Count.ToString());
             }
         }
 
@@ -282,9 +300,9 @@ namespace BPJSScrapper.Forms
                 });
                 return;
             }
-            fileHelper.CreateFolderIfNotExist("hasil");
-            string filepath = "hasil/hasil_SIIP_BPJS_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx";
-            using(var workbook = SpreadsheetDocument.Create(filepath, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook))
+            
+            string filepath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "/hasil_SIIP_BPJS_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx";
+            using(var workbook = SpreadsheetDocument.Create(filepath, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook,true))
             {
                 var workbookPart = workbook.AddWorkbookPart();
                 workbook.WorkbookPart.Workbook = new Workbook();
@@ -310,7 +328,7 @@ namespace BPJSScrapper.Forms
                 Cell cell6 = new Cell() { CellReference = "F1", DataType = CellValues.String, CellValue = new CellValue("Tanggal & Waktu") };
                 Cell cell7 = new Cell() { CellReference = "G1", DataType = CellValues.String, CellValue = new CellValue("Status") };
                 Cell cell8 = new Cell() { CellReference = "H1", DataType = CellValues.String, CellValue = new CellValue("Ket") };
-                headerRow.Append(cell1,cell2,cell3,cell4,cell5,cell6,cell7);
+                headerRow.Append(cell1,cell2,cell3,cell4,cell5,cell6,cell7,cell8);
                 var rowIndex = 2;
                 for (int i = 0; i <= data.Count - 1; i++)
                 {
@@ -318,7 +336,7 @@ namespace BPJSScrapper.Forms
                     {
                         break;
                     }
-                    if (i <= data.Count)
+                    if (i <= data.Count - 1)
                     {
                         if (((ArrayList)data[i])[0].ToString() == "")
                         {
@@ -326,8 +344,8 @@ namespace BPJSScrapper.Forms
                         }
                         try
                         {
-                            string kpj = ((ArrayList)data[i])[0].ToString();
-                            string nik = "-";
+                            var kpj =  ((ArrayList)data[i])[0].ToString();
+                            var nik = "-";
                             string nama = "-";
                             string tgl_lahir = "-";
                             string email = "-";
@@ -368,6 +386,16 @@ namespace BPJSScrapper.Forms
                                                 tgl_lahir = seleniumHelper.getDriver().FindElement(By.Id("tgl_lahir")).GetAttribute("value");
                                                 email = seleniumHelper.getDriver().FindElement(By.Id("email")).GetAttribute("value");
                                                 logger.In(kpj + ": " + nik + " " + nama + " " + tgl_lahir + " " + email);
+                                                Cell c1 = new Cell() { CellReference = "A" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(kpj) };
+                                                Cell c2 = new Cell() { CellReference = "B" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(nik) };
+                                                Cell c3 = new Cell() { CellReference = "C" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(nama) };
+                                                Cell c4 = new Cell() { CellReference = "D" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(tgl_lahir) };
+                                                Cell c5 = new Cell() { CellReference = "E" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(email) };
+                                                Cell c6 = new Cell() { CellReference = "F" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")) };
+                                                Cell c7 = new Cell() { CellReference = "G" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(sts) };
+                                                Cell c8 = new Cell() { CellReference = "H" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(ket) };
+                                                row.Append(c1, c2, c3, c4, c5, c6, c7, c8);
+                                                rowIndex++;
 
                                             }
 
@@ -379,19 +407,9 @@ namespace BPJSScrapper.Forms
                                             ket = rawName;
                                         }
                                         //Save Excels
-                                        
-
-                                        Cell c1 = new Cell() { CellReference = "A" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(kpj) };
-                                        Cell c2 = new Cell() { CellReference = "B" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(nik) };
-                                        Cell c3 = new Cell() { CellReference = "C" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(nama) };
-                                        Cell c4 = new Cell() { CellReference = "D" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(tgl_lahir) };
-                                        Cell c5 = new Cell() { CellReference = "E" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(email) };
-                                        Cell c6 = new Cell() { CellReference = "F" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")) };
-                                        Cell c7 = new Cell() { CellReference = "G" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(sts) };
-                                        Cell c8 = new Cell() { CellReference = "H" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(ket) };
-                                        row.Append(c1,c2,c3,c4,c5,c6,c7,c8);
                                         seleniumHelper.getDriver().Navigate().GoToUrl(LinksVal.form_url);
                                         new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")));
+
                                     }
                                 }
                                 else
@@ -404,7 +422,7 @@ namespace BPJSScrapper.Forms
                                     new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")));
                                 }
                             }
-                            rowIndex++;
+                          
                         }
                         catch (WebDriverTimeoutException ex)
                         {
@@ -420,9 +438,10 @@ namespace BPJSScrapper.Forms
                             new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("//*[@id=\"accordion-test\"]/div/div[1]/h4/a")));
                         }
                     }
-                    workbook.Save();
+                    Thread.Sleep(1000);
                 }
-                
+               
+               
             }
             logger.Process("Selesai Memproses Data !");
             botIsRunning = false;

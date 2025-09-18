@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormLasik));
             this.txt_log = new System.Windows.Forms.RichTextBox();
             this.btn_start = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
@@ -57,7 +58,7 @@
             this.btn_start.Name = "btn_start";
             this.btn_start.Size = new System.Drawing.Size(99, 50);
             this.btn_start.TabIndex = 17;
-            this.btn_start.Text = "START";
+            this.btn_start.Text = "Start";
             this.btn_start.UseVisualStyleBackColor = true;
             this.btn_start.Click += new System.EventHandler(this.btn_start_Click);
             // 
@@ -139,6 +140,7 @@
             this.Controls.Add(this.txt_file);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormLasik";
             this.Text = "FormLasik";
             this.ResumeLayout(false);

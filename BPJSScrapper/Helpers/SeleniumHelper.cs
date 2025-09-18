@@ -17,11 +17,14 @@ namespace BPJSScrapper.Helpers
         ChromeDriverService cds;
         public string Url { get; set; }
 
+        PageLoadStrategy pgs;
+
         public SeleniumHelper(string url)
         {
             Url = url;
             cds = ChromeDriverService.CreateDefaultService();
             cds.HideCommandPromptWindow = true;
+            pgs = PageLoadStrategy.Default;
         }
 
         public IWebDriver getDriver()
@@ -41,12 +44,16 @@ namespace BPJSScrapper.Helpers
 
         }
 
+        public void setPageLoadStrategy(PageLoadStrategy pgs)
+        {
+            this.pgs = pgs;
+        }
 
         public void Start()
         {
             ChromeOptions options = new ChromeOptions();
             options.AddArgument("no-sandbox");
-            options.PageLoadStrategy = PageLoadStrategy.None;
+            options.PageLoadStrategy = pgs;
             driver = new ChromeDriver(cds,options);
             driver.Navigate().GoToUrl(Url);
         }
