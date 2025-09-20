@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormDPT));
             this.label4 = new System.Windows.Forms.Label();
             this.txt_log = new System.Windows.Forms.RichTextBox();
             this.btn_start = new System.Windows.Forms.Button();

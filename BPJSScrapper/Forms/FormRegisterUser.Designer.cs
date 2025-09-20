@@ -144,7 +144,6 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormRegisterUser";
             this.Text = "FormRegisterUser";
             this.ResumeLayout(false);

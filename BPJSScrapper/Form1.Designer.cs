@@ -28,15 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.btn_bpjs = new System.Windows.Forms.Button();
             this.btn_lasik = new System.Windows.Forms.Button();
             this.btn_dpt = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.logo = new System.Windows.Forms.PictureBox();
             this.btn_register_user = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.logo)).BeginInit();
             this.SuspendLayout();
             // 
             // btn_bpjs
@@ -82,7 +79,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(113, 69);
+            this.label2.Location = new System.Drawing.Point(17, 68);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(183, 14);
             this.label2.TabIndex = 6;
@@ -92,21 +89,11 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Arial Black", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(108, 24);
+            this.label1.Location = new System.Drawing.Point(12, 23);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(254, 45);
             this.label1.TabIndex = 5;
             this.label1.Text = "Auto Checker";
-            // 
-            // logo
-            // 
-            this.logo.Image = global::BPJSScrapper.Properties.Resources.IMG_20250916_WA00801;
-            this.logo.Location = new System.Drawing.Point(13, 11);
-            this.logo.Name = "logo";
-            this.logo.Size = new System.Drawing.Size(89, 83);
-            this.logo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.logo.TabIndex = 4;
-            this.logo.TabStop = false;
             // 
             // btn_register_user
             // 
@@ -129,16 +116,13 @@
             this.Controls.Add(this.btn_register_user);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.logo);
             this.Controls.Add(this.btn_dpt);
             this.Controls.Add(this.btn_lasik);
             this.Controls.Add(this.btn_bpjs);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "BPJS LASIK Scrapper";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.logo)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -150,7 +134,6 @@
         private System.Windows.Forms.Button btn_dpt;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.PictureBox logo;
         private System.Windows.Forms.Button btn_register_user;
     }
 }

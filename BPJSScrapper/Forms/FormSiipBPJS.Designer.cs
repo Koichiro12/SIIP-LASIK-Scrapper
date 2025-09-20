@@ -154,7 +154,6 @@
             this.Controls.Add(this.txt_file);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormSiipBPJS";
             this.Text = "FormSiipBPJS";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormSiipBPJS_FormClosed);
