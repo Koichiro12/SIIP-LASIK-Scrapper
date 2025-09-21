@@ -240,19 +240,7 @@ namespace BPJSScrapper.Forms
                                             {
                                               
                                                 Checking = false;
-                                                var row = new Row() { RowIndex = (UInt32)rowIndex };
-                                                sheetData.Append(row);
-
                                                 status = "Gagal";
-                                                Cell c1 = new Cell() { CellReference = "A" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(kpj) };
-                                                Cell c2 = new Cell() { CellReference = "B" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(nik) };
-                                                Cell c3 = new Cell() { CellReference = "C" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(nama) };
-                                                Cell c4 = new Cell() { CellReference = "D" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(tgl_lahir) };
-                                                Cell c5 = new Cell() { CellReference = "E" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(email) };
-                                                Cell c6 = new Cell() { CellReference = "F" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")) };
-                                                Cell c7 = new Cell() { CellReference = "G" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(status) };
-                                                row.Append(c1, c2, c3, c4, c5, c6, c7);
-                                                rowIndex++;
                                                 logger.In(kpj + " : " + status);
                                                 seleniumHelper.getDriver().Navigate().Refresh();
                                             }

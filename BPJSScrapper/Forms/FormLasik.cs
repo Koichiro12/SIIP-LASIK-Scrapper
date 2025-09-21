@@ -242,11 +242,10 @@ namespace BPJSScrapper.Forms
                                         seleniumHelper.getDriver().FindElement(By.XPath("//*[@id=\"regForm\"]/div[2]/div/div/div[2]/input")).SendKeys(kpj);
                                         Thread.Sleep(700);
                                         seleniumHelper.getDriver().FindElement(By.XPath("//*[@id=\"regForm\"]/div[2]/div/div/div[3]/input")).SendKeys(nama);
-                                        Thread.Sleep(700);
-                                        seleniumHelper.getDriver().FindElement(By.TagName("body")).Click();
+                                        Thread.Sleep(1000);
                                         seleniumHelper.getDriver().FindElement(By.TagName("body")).Click();
 
-                                        new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("/html/body/div[3]/div/div[3]/button[1]")));
+                                        new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(60)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("/html/body/div[3]/div/div[3]/button[1]")));
                                         if (seleniumHelper.isElementPresent(By.XPath("/html/body/div[3]/div/div[3]/button[1]")))
                                         {
                                             string hasil = seleniumHelper.getDriver().FindElement(By.XPath("/html/body/div[3]/div/div[3]/button[1]")).Text;
@@ -273,7 +272,11 @@ namespace BPJSScrapper.Forms
                                             }
 
                                         }
-                                        Thread.Sleep(3000);
+                                        else
+                                        {
+                                            i -= 1;
+                                            logger.Process("Browser tidak bereaksi, mengulang kembali pengecekan");
+                                        }
                                         seleniumHelper.getDriver().Navigate().GoToUrl(LinksVal.lasik);
                                     }
                                     
