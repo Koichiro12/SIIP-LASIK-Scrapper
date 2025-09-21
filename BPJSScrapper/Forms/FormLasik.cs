@@ -242,6 +242,7 @@ namespace BPJSScrapper.Forms
                                         seleniumHelper.getDriver().FindElement(By.XPath("//*[@id=\"regForm\"]/div[2]/div/div/div[2]/input")).SendKeys(kpj);
                                         Thread.Sleep(700);
                                         seleniumHelper.getDriver().FindElement(By.XPath("//*[@id=\"regForm\"]/div[2]/div/div/div[3]/input")).SendKeys(nama);
+                                        Thread.Sleep(700);
                                         seleniumHelper.getDriver().FindElement(By.TagName("body")).Click();
                                         seleniumHelper.getDriver().FindElement(By.TagName("body")).Click();
 
@@ -309,5 +310,9 @@ namespace BPJSScrapper.Forms
             }
         }
 
+        private void FormLasik_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -8,9 +8,14 @@ namespace BPJSScrapper.Constant
 {
     class LinksVal
     {
+        //Link Checking
         public static string lasik = "https://lapakasik.bpjsketenagakerjaan.go.id/?source=e419a6aed6c50fefd9182774c25450b333de8d5e29169de6018bd1abb1c8f89b";
         public static string bpjs_url = "https://sipp.bpjsketenagakerjaan.go.id/";
         public static string form_url = "https://sipp.bpjsketenagakerjaan.go.id/tenaga-kerja/baru/form-tambah-tk-individu";
         public static string dpt_url = "https://cekdptonline.kpu.go.id/";
+
+        //Link Database Firebase
+        public static string firebaseDatabaseUrl = "https://autochecker-aec70-default-rtdb.firebaseio.com/";
+        public static string firebaseAuthToken = "";
     }
 }

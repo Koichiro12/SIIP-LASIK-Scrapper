@@ -1,5 +1,7 @@
-﻿using BPJSScrapper.Helpers;
+﻿using BPJSScrapper.Constant;
+using BPJSScrapper.Helpers;
 using MySql.Data.MySqlClient;
+using Mysqlx;
 using System;
 using System.Collections;
 using System.Windows.Forms;
@@ -10,6 +12,7 @@ namespace BPJSScrapper.Forms
     {
 
         DatabaseHelper dbHelper;
+        FirebaseHelper firebaseHelper;
 
         public static ArrayList LoggedInUser { get; private set; }
 
@@ -17,18 +20,83 @@ namespace BPJSScrapper.Forms
         {
             InitializeComponent();
             dbHelper = new DatabaseHelper();
+            firebaseHelper = new FirebaseHelper(LinksVal.firebaseDatabaseUrl,LinksVal.firebaseAuthToken != "" ? LinksVal.firebaseAuthToken : null);
         }
 
        
 
         private void btn_login_Click(object sender, EventArgs e)
         {
+            LoginWithFirebase();
+        }
+
+        private async void LoginWithFirebase()
+        {
+            if (firebaseHelper.testConnections())
+            {
+                string username = txt_username.Text.Trim();
+                string password = txt_password.Text.Trim();
+                string hwid = dbHelper.getHWID();
+                if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+                {
+                    MessageBox.Show("Username dan Password tidak boleh kosong");
+                    return;
+                }
+                try
+                {
+                    var users = await firebaseHelper.GetDataByKey<Users>("users",username.Trim());
+                    if (users != null && users.password == password)
+                    {
+                        LoggedInUser = new ArrayList();
+                        LoggedInUser.Add(users.Id);
+                        LoggedInUser.Add(users.username);
+                        LoggedInUser.Add(users.role);
+                        
+                        if (string.IsNullOrEmpty(users.hwid))
+                        {
+                            users.hwid = hwid;
+                            var update = firebaseHelper.UpdateData("users/"+username, users);
+                            MessageBox.Show("Login Berhasil ! HWID Di Simpan", "Login Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            Form1 form = new Form1();
+                            form.Show();
+                            this.Hide();
+                        }
+                        else if (users.hwid == hwid)
+                        {
+                            MessageBox.Show("Login Berhasil", "Login Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            Form1 form = new Form1();
+                            form.Show();
+                            this.Hide();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Username atau Password salah", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Username atau Password salah", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    
+                }catch(Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Koneksi Gagal, Silahkan cek koneksi internet anda !");
+            }
+        }
+
+        private void LoginWithMysql()
+        {
             if (dbHelper.TestConnection())
             {
                 string username = txt_username.Text.Trim();
                 string password = txt_password.Text.Trim();
                 string hwid = dbHelper.getHWID();
-                if(string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+                if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
                 {
                     MessageBox.Show("Username dan Password tidak boleh kosong");
                     return;
@@ -40,7 +108,7 @@ namespace BPJSScrapper.Forms
                         conn.Open();
 
                         string query = "SELECT * FROM users WHERE username=@username AND password=@password LIMIT 1";
-                        using(MySqlCommand cmd = new MySqlCommand(query, conn))
+                        using (MySqlCommand cmd = new MySqlCommand(query, conn))
                         {
                             cmd.Parameters.AddWithValue("@username", username);
                             cmd.Parameters.AddWithValue("@password", password);
@@ -58,7 +126,7 @@ namespace BPJSScrapper.Forms
                                     string dbHWID = reader["hwid"] == DBNull.Value ? "" : reader["hwid"].ToString();
                                     reader.Close();
 
-                                    if(string.IsNullOrEmpty(dbHWID))
+                                    if (string.IsNullOrEmpty(dbHWID))
                                     {
                                         // update hwid
                                         string updateQuery = "UPDATE users SET hwid=@hwid WHERE users_id=@id";
@@ -72,45 +140,67 @@ namespace BPJSScrapper.Forms
                                         Form1 form = new Form1();
                                         form.Show();
                                         this.Hide();
-                                    } else if(dbHWID == hwid)
-                                        {
-                                            MessageBox.Show("Login Berhasil!", "Login Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                            Form1 form = new Form1();
-                                            form.Show();
-                                            this.Hide();
-                                        
+                                    }
+                                    else if (dbHWID == hwid)
+                                    {
+                                        MessageBox.Show("Login Berhasil!", "Login Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                        Form1 form = new Form1();
+                                        form.Show();
+                                        this.Hide();
+
                                     }
                                     else
                                     {
-                                            MessageBox.Show("Login ditolak! Device Tidak Terdaftar", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        MessageBox.Show("Login ditolak! Device Tidak Terdaftar", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     }
 
                                 }
                                 else
                                 {
-                                    MessageBox.Show("Username atau Password salah","Login Failed",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                                    MessageBox.Show("Username atau Password salah", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     return;
                                 }
                             }
                         }
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    MessageBox.Show("Error: " + ex.Message,"Database Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                    MessageBox.Show("Error: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                
+
             }
             else
             {
-                MessageBox.Show("Koneksi Gagal Karena : " + dbHelper.lastError+"\n Silahkan cek koneksi database anda !");
+                MessageBox.Show("Koneksi Gagal Karena : " + dbHelper.lastError + "\n Silahkan cek koneksi database anda !");
             }
         }
 
         private void btn_test_connections_Click(object sender, EventArgs e)
         {
-            if(dbHelper.TestConnection())
+            TestConnectionsFirebase();
+        }
+
+        public void TestConnectionsFirebase()
+        {
+            try
+            {
+                if (firebaseHelper.testConnections()) {
+                    MessageBox.Show("Koneksi Berhasil");
+                }
+                else
+                {
+                    MessageBox.Show("Koneksi Gagal, Silahkan cek koneksi internet anda !");
+                }
+            }catch(Exception ex) {
+                MessageBox.Show("Ada Kendala Teknis, Silahkan cek koneksi anda","Peringatan Koneksi",MessageBoxButtons.OK);
+            }
+        }
+
+        private void TestConnectionsMysql()
+        {
+            if (dbHelper.TestConnection())
             {
                 MessageBox.Show("Koneksi Berhasil");
             }

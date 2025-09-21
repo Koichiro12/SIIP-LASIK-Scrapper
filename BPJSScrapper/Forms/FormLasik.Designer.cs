@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormLasik));
             this.txt_log = new System.Windows.Forms.RichTextBox();
             this.btn_start = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
@@ -142,6 +141,7 @@
             this.Controls.Add(this.label1);
             this.Name = "FormLasik";
             this.Text = "FormLasik";
+            this.Load += new System.EventHandler(this.FormLasik_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using BPJSScrapper.Constant;
 
 namespace BPJSScrapper.Forms
 {
@@ -15,6 +16,7 @@ namespace BPJSScrapper.Forms
     {
         List<string> roleData;
         DatabaseHelper databaseHelper;
+        FirebaseHelper firebaseHelper;
         public FormRegisterUser()
         {
             InitializeComponent();
@@ -25,14 +27,17 @@ namespace BPJSScrapper.Forms
             cb_role.DropDownStyle = ComboBoxStyle.DropDownList;
 
             databaseHelper = new DatabaseHelper();
+            firebaseHelper = new FirebaseHelper(LinksVal.firebaseDatabaseUrl, LinksVal.firebaseAuthToken != "" ? LinksVal.firebaseAuthToken : null);
+
         }
 
-        private void btn_register_Click(object sender, EventArgs e)
+
+        private void RegisterMysql()
         {
             string username = txt_username.Text.Trim();
             string password = txt_password.Text.Trim();
             string role = cb_role.SelectedItem.ToString();
-            if(string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
                 MessageBox.Show("Username dan Password tidak boleh kosong.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -65,8 +70,43 @@ namespace BPJSScrapper.Forms
             {
                 MessageBox.Show("Error: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
 
+        public void RegisterFirebase()
+        {
 
+        }
+
+        private void btn_register_Click(object sender, EventArgs e)
+        {
+            if (firebaseHelper.testConnections())
+            {
+                string username = txt_username.Text.Trim();
+                string password = txt_password.Text.Trim();
+                string role = cb_role.SelectedItem.ToString();
+                if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+                {
+                    MessageBox.Show("Username dan Password tidak boleh kosong.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                try
+                {
+                    Users user = new Users( username.Trim(), "", username, password, role);
+                    var insert = firebaseHelper.addData<Users>("users",username, user);
+                    
+                        MessageBox.Show("User berhasil didaftarkan.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        this.Close();
+                    
+
+                }catch(Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex.Message, "Koneksi Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Koneksi Gagal, Silahkan cek koneksi internet anda !");
+            }
         }
     }
 }
