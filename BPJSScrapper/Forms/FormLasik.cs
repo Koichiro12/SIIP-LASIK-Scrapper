@@ -205,6 +205,7 @@ namespace BPJSScrapper.Forms
                     Cell cell7 = new Cell() { CellReference = "G1", DataType = CellValues.String, CellValue = new CellValue("Status") };
                     headerRow.Append(cell1, cell2, cell3, cell4, cell5, cell6, cell7);
                     var rowIndex = 2;
+                    var retryingCount = 0;
                     logger.Process("Starting Auto Checking..");
                     for(int i = 1; i <= data.Count - 1; i++)
                     {
@@ -242,44 +243,82 @@ namespace BPJSScrapper.Forms
                                         seleniumHelper.getDriver().FindElement(By.XPath("//*[@id=\"regForm\"]/div[2]/div/div/div[2]/input")).SendKeys(kpj);
                                         Thread.Sleep(700);
                                         seleniumHelper.getDriver().FindElement(By.XPath("//*[@id=\"regForm\"]/div[2]/div/div/div[3]/input")).SendKeys(nama);
-                                        Thread.Sleep(1000);
-                                        seleniumHelper.getDriver().FindElement(By.TagName("body")).Click();
+                                        Thread.Sleep(600);
+                                        seleniumHelper.getDriver().FindElement(By.XPath("//*[@id=\"regForm\"]/div[2]/div/div/div[3]/input")).SendKeys(OpenQA.Selenium.Keys.Enter);
 
-                                        new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(60)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("/html/body/div[3]/div/div[3]/button[1]")));
-                                        if (seleniumHelper.isElementPresent(By.XPath("/html/body/div[3]/div/div[3]/button[1]")))
+                                        bool isPresent = false;
+                                        for(int r = 0; r < 15; r++)
                                         {
-                                            string hasil = seleniumHelper.getDriver().FindElement(By.XPath("/html/body/div[3]/div/div[3]/button[1]")).Text;
-                                            if(hasil == "LANJUTKAN MELALUI JMO")
+                                            if (seleniumHelper.isElementPresent(By.XPath("/html/body/div[3]/div/div[3]/button[1]")))
                                             {
-                                                var row = new Row() { RowIndex = (UInt32)rowIndex };
-                                                sheetData.Append(row);
-                                                
-                                                status = "Berhasil";
-                                                Cell c1 = new Cell() { CellReference = "A" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(kpj) };
-                                                Cell c2 = new Cell() { CellReference = "B" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(nik) };
-                                                Cell c3 = new Cell() { CellReference = "C" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(nama) };
-                                                Cell c4 = new Cell() { CellReference = "D" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(tgl_lahir) };
-                                                Cell c5 = new Cell() { CellReference = "E" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(email) };
-                                                Cell c6 = new Cell() { CellReference = "F" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")) };
-                                                Cell c7 = new Cell() { CellReference = "G" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(status) };
-                                                row.Append(c1, c2, c3, c4, c5, c6, c7);
-                                                rowIndex++;
-                                                logger.In(kpj + " : "+status);
+                                                string hasil = seleniumHelper.getDriver().FindElement(By.XPath("/html/body/div[3]/div/div[3]/button[1]")).Text;
+                                                if (hasil == "LANJUTKAN MELALUI JMO")
+                                                {
+                                                    var row = new Row() { RowIndex = (UInt32)rowIndex };
+                                                    sheetData.Append(row);
+
+                                                    status = "Berhasil";
+                                                    Cell c1 = new Cell() { CellReference = "A" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(kpj) };
+                                                    Cell c2 = new Cell() { CellReference = "B" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(nik) };
+                                                    Cell c3 = new Cell() { CellReference = "C" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(nama) };
+                                                    Cell c4 = new Cell() { CellReference = "D" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(tgl_lahir) };
+                                                    Cell c5 = new Cell() { CellReference = "E" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(email) };
+                                                    Cell c6 = new Cell() { CellReference = "F" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")) };
+                                                    Cell c7 = new Cell() { CellReference = "G" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(status) };
+                                                    row.Append(c1, c2, c3, c4, c5, c6, c7);
+                                                    rowIndex++;
+                                                    logger.In(kpj + " : " + status);
+                                                }
+                                                else
+                                                {
+                                                    logger.In(kpj + " : Gagal");
+                                                }
+                                                retryingCount = 0;
+                                                isPresent = true;
+                                                seleniumHelper.getDriver().Navigate().GoToUrl(LinksVal.lasik);
+                                                break;
+                                            }
+                                            Thread.Sleep(700);
+                                        }
+                                        if (!isPresent)
+                                        {
+                                            if (retryingCount < 2)
+                                            {
+                                                i -= 1;
+                                                retryingCount++;
+                                                logger.Process("Browser tidak bereaksi, mengulang kembali pengecekan");
+
                                             }
                                             else
                                             {
-                                                logger.In(kpj + " : Gagal");
+                                                logger.Process("Browser tidak bereaksi Karena Timeout, Melanjutkan ke nomor selanjutnya");
+                                                retryingCount = 0;
                                             }
-
+                                            
+                                            seleniumHelper.getDriver().Navigate().GoToUrl(LinksVal.lasik);
                                         }
-                                        else
-                                        {
-                                            i -= 1;
-                                            logger.Process("Browser tidak bereaksi, mengulang kembali pengecekan");
-                                        }
-                                        seleniumHelper.getDriver().Navigate().GoToUrl(LinksVal.lasik);
+                                       
+                                      
                                     }
                                     
+                                }
+                                catch(TimeoutException ex)
+                                {
+                                    if(retryingCount < 2)
+                                    {
+                                        i -= 1;
+
+                                        logger.Process("Browser tidak bereaksi, mengulang kembali pengecekan");
+                                       
+                                    }
+                                    else
+                                    {
+                                        logger.Process("Browser tidak bereaksi Karena Timeout, Melanjutkan ke nomor selanjutnya");
+                                        retryingCount = 0;
+                                    }
+                                    retryingCount++;
+                                    seleniumHelper.getDriver().Navigate().GoToUrl(LinksVal.lasik);
+
                                 }
                                 catch (Exception ex)
                                 {

@@ -1,5 +1,6 @@
 ﻿using BPJSScrapper.Constant;
 using BPJSScrapper.Helpers;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using OpenQA.Selenium;
@@ -129,8 +130,8 @@ namespace BPJSScrapper.Forms
             }
             else
             {
-                seleniumHelper.close();
                 botIsRunning = false;
+                seleniumHelper.close();
                 btn_start.Invoke((MethodInvoker)delegate
                 {
                     btn_start.Enabled = true;
@@ -202,7 +203,11 @@ namespace BPJSScrapper.Forms
                     Cell cell5 = new Cell() { CellReference = "E1", DataType = CellValues.String, CellValue = new CellValue("Email") };
                     Cell cell6 = new Cell() { CellReference = "F1", DataType = CellValues.String, CellValue = new CellValue("Tanggal & Waktu") };
                     Cell cell7 = new Cell() { CellReference = "G1", DataType = CellValues.String, CellValue = new CellValue("Status") };
-                    headerRow.Append(cell1, cell2, cell3, cell4, cell5, cell6, cell7);
+                    Cell cell8 = new Cell() { CellReference = "H1", DataType = CellValues.String, CellValue = new CellValue("Ket") };
+                    Cell cell9 = new Cell() { CellReference = "I1", DataType = CellValues.String, CellValue = new CellValue("Kabupaten") };
+                    Cell cell10 = new Cell() { CellReference = "J1", DataType = CellValues.String, CellValue = new CellValue("Kecamatan") };
+                    Cell cell11 = new Cell() { CellReference = "K1", DataType = CellValues.String, CellValue = new CellValue("Kelurahan") };
+                    headerRow.Append(cell1, cell2, cell3, cell4, cell5, cell6, cell7,cell8,cell9,cell10,cell11);
                     var rowIndex = 2;
                     logger.Process("Starting Auto Checking..");
                     for(int i = 1; i <= data.Count - 1; i++)
@@ -223,6 +228,10 @@ namespace BPJSScrapper.Forms
                                     string tgl_lahir = ((ArrayList)data[i])[3].ToString();
                                     string email = ((ArrayList)data[i])[4].ToString();
                                     string status = "Gagal";
+                                    string ket = "-";
+                                    string kab_kota = "";
+                                    string kecamatan = "";
+                                    string kelurahan = "";
                                     logger.Out("Data Ke - " + i + " : " + kpj);
                                     new WebDriverWait(seleniumHelper.getDriver(), TimeSpan.FromSeconds(600)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath("//*[@id=\"__BVID__20\"]")));
                                     if (seleniumHelper.isElementPresent(By.XPath("//*[@id=\"__BVID__20\"]")))
@@ -246,7 +255,10 @@ namespace BPJSScrapper.Forms
                                             }
                                             if (seleniumHelper.isElementPresent(By.ClassName("watermarked")))
                                             {
-                                               
+                                                
+                                                    kab_kota = seleniumHelper.getDriver().FindElement(By.ClassName("row--left")).Text.Replace("Kabupaten","");
+                                                    kecamatan = seleniumHelper.getDriver().FindElement(By.ClassName("row--center")).Text.Replace("Kecamatan", "");
+                                                    kelurahan = seleniumHelper.getDriver().FindElements(By.ClassName("row--right"))[2].Text.Replace("Kelurahan", "");
                                                     Checking = false;
                                                     var row = new Row() { RowIndex = (UInt32)rowIndex };
                                                     sheetData.Append(row);
@@ -259,7 +271,11 @@ namespace BPJSScrapper.Forms
                                                     Cell c5 = new Cell() { CellReference = "E" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(email) };
                                                     Cell c6 = new Cell() { CellReference = "F" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")) };
                                                     Cell c7 = new Cell() { CellReference = "G" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(status) };
-                                                    row.Append(c1, c2, c3, c4, c5, c6, c7);
+                                                    Cell c8 = new Cell() { CellReference = "H" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(ket) };
+                                                    Cell c9 = new Cell() { CellReference = "I" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(kab_kota) };
+                                                    Cell c10 = new Cell() { CellReference = "J" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(kecamatan) };
+                                                    Cell c11 = new Cell() { CellReference = "K" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(kelurahan) };
+                                                    row.Append(c1, c2, c3, c4, c5, c6, c7,c8,c9,c10,c11);
                                                     rowIndex++;
                                                     logger.In(kpj + " : " + status);
                                                     seleniumHelper.getDriver().Navigate().Refresh();

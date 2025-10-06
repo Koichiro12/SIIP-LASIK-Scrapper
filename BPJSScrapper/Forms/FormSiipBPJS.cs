@@ -385,17 +385,25 @@ namespace BPJSScrapper.Forms
                                                 nik = seleniumHelper.getDriver().FindElement(By.Id("no_identitas")).GetAttribute("value");
                                                 tgl_lahir = seleniumHelper.getDriver().FindElement(By.Id("tgl_lahir")).GetAttribute("value");
                                                 email = seleniumHelper.getDriver().FindElement(By.Id("email")).GetAttribute("value");
-                                                logger.In(kpj + ": " + nik + " " + nama + " " + tgl_lahir + " " + email);
-                                                Cell c1 = new Cell() { CellReference = "A" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(kpj) };
-                                                Cell c2 = new Cell() { CellReference = "B" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(nik) };
-                                                Cell c3 = new Cell() { CellReference = "C" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(nama) };
-                                                Cell c4 = new Cell() { CellReference = "D" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(tgl_lahir) };
-                                                Cell c5 = new Cell() { CellReference = "E" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(email) };
-                                                Cell c6 = new Cell() { CellReference = "F" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")) };
-                                                Cell c7 = new Cell() { CellReference = "G" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(sts) };
-                                                Cell c8 = new Cell() { CellReference = "H" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(ket) };
-                                                row.Append(c1, c2, c3, c4, c5, c6, c7, c8);
-                                                rowIndex++;
+                                                if (!email.ToLower().Trim().Contains("@gmail"))
+                                                {
+                                                    logger.In(kpj + ": " + nik + " " + nama + " " + tgl_lahir + " " + email);
+                                                    Cell c1 = new Cell() { CellReference = "A" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(kpj) };
+                                                    Cell c2 = new Cell() { CellReference = "B" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(nik) };
+                                                    Cell c3 = new Cell() { CellReference = "C" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(nama) };
+                                                    Cell c4 = new Cell() { CellReference = "D" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(tgl_lahir) };
+                                                    Cell c5 = new Cell() { CellReference = "E" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(email) };
+                                                    Cell c6 = new Cell() { CellReference = "F" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")) };
+                                                    Cell c7 = new Cell() { CellReference = "G" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(sts) };
+                                                    Cell c8 = new Cell() { CellReference = "H" + rowIndex, DataType = CellValues.String, CellValue = new CellValue(ket) };
+                                                    row.Append(c1, c2, c3, c4, c5, c6, c7, c8);
+                                                    rowIndex++;
+                                                }
+                                                else
+                                                {
+                                                    logger.In(kpj + ": Gagal");
+                                                }
+                                              
 
                                             }
 
